@@ -1,0 +1,3 @@
+<span class="badge badge-secondary {% if selectedTag is defined and tag.name == selectedTag %}highlight{% endif %}">
+    <a href="{{ path('question_list_by_tag', {'name': tag.name}) }}">{{ tag.name }}</a>
+</span>

@@ -1,0 +1,63 @@
+html {
+    overflow-y: scroll;
+}
+
+.navbar #right span {
+    vertical-align: middle;
+}
+
+.question-container.blocked, .answer.blocked {
+    background-color: lightyellow !important; /* Le important est là si acceptée + bloquée */
+}
+.question-container.blocked::before {
+    content: "Bloquée";
+}
+
+.question-container h2 {
+    font-size: 1.4em;
+}
+
+.question-container h2 .badge {
+    font-size: 0.6em;
+    vertical-align: middle;
+}
+
+.tags a {
+    color: white;
+}
+
+.tags .badge.highlight {
+    background-color: crimson;
+}
+
+.answer {
+    padding: 0.5em;
+    overflow: auto;
+}
+
+.answer .btn {
+    float: right;
+    font-size: 0.75em;
+}
+
+.answer.validated {
+    /* content: "✓";
+    float: left; */
+    background-color: #d4edda;
+}
+.answer.validated::before {
+    color: forestgreen;
+    content: "✓";
+    /* float: left; */
+    font-size: 2em;
+}
+
+.small-grey-text {
+    color: grey;
+    font-size: 0.9em;
+}
+
+footer {
+    color: grey;
+    text-align: center;
+}

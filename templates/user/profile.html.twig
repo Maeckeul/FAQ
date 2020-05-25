@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon compte{% endblock %}
+
+{% block body %}
+
+<h1>Mon compte</h1>
+
+<dl class="row">
+    <dt class="col-3">Nom d'utilisateur</dt>
+    <dd class="col-9">{{ user.username }}</dd>
+    <dt class="col-3">Adresse e-mail</dt>
+    <dd class="col-9">{{ user.email }}</dd>
+</dl>
+
+<p>
+    <a href="{{ path('user_edit') }}" class="btn btn-sm btn-primary">Modifier mon profil</a>
+    <a href="{{ path('user_edit_password') }}" class="btn btn-sm btn-primary">Modifier mon mot de passe</a>
+</p>
+
+<hr>
+<h2>Mes questions</h2>
+{% for question in user.questions %}
+    <hr class="my-4">
+    {% include 'question/_detail.html.twig' %}
+{% endfor %}
+
+<hr>
+<h2>Mes réponses aux questions</h2>
+
+<div class="question-container">
+{% for answer in user.answers %}
+    <hr class="my-4">
+    <h2>
+        <a href="{{ path('question_show', {'id': answer.question.id}) }}">{{ answer.question.title }}</a>
+        {% if answer.isValidated %}
+        <span class="badge badge-success">Acceptée</span>
+        {% endif %}
+    </h2>
+    <p class="small-grey-text">
+        Répondue le {{ answer.createdAt|date("d/m/Y à h:i") }}
+    </p>
+
+{% endfor %}
+</div>
+
+{% endblock %}
