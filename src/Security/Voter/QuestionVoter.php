@@ -19,7 +19,7 @@ class QuestionVoter extends Voter
         // $attribute est une chaine de caractères,
         // on teste si elle est présente dans une liste de droits gérés par ce Voter
         // $subject est l'objet concerné, on attend un objet de la classe Question
-        return in_array($attribute, ['edit', 'view'])
+        return in_array($attribute, ['edit', 'validateAnswer'])
             && $subject instanceof Question;
     }
 
@@ -67,12 +67,32 @@ class QuestionVoter extends Voter
                 // Le break permet de sortir du switch, sans lui le code dans le case 'view'
                 // sera exécuté également pour case 'edit'
                 break;
-            case 'view':
-                // On n'a rien à tester ici mais on laisse ce code présent pour
-                // montrer comment on pourrait tester plusieurs droits dans le même Voter
-                // return true or false
+            case 'validateAnswer':
+                // On cherche à confirmer que l'utilisateur connecté a le droit de valider la réponse à la question
+                // Ici, le rôle n'a aucun effet sur ce droit
+                if ($user == $question->getUser()) {
+                    return true;
+                }
                 break;
         }
+
+        // Encore une variante, pour éviter de répéter du code dans le switch
+        // Ici, on ne met jamais de break;
+        // Sans break, pour le cas du droit 'edit', PHP continue l'exécution du switch
+        // tant qu'il n'a pas rencontré l'instruction break;
+        // Il va donc tester le rôle ET l'auteur de la question
+        /*
+        switch ($attribute) {
+            case 'edit':
+                if (in_array($user->getRole()->getRoleString(), ['ROLE_ADMIN', 'ROLE_MODERATOR'])) {
+                    return true;
+                }
+            case 'validateAnswer':
+                if ($user == $question->getUser()) {
+                    return true;
+                }
+        }
+        */
 
         // Ceci est une sécurité, un moyen de s'assurer que voteOnAttribute retourne au moins un booléen
         // Si rien au-dessus n'a retourné quoique ce soit, on retourne false

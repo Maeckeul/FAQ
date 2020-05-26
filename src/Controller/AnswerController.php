@@ -14,10 +14,12 @@ class AnswerController extends AbstractController
     public function validate(Answer $answer)
     {
         // L'auteur de la question est-il le user qui valide ?
-        $user = $this->getUser();
-        if ($user !== $answer->getQuestion()->getUser()) {
-            throw $this->createAccessDeniedException('Non autorisé.');
-        }
+        // $user = $this->getUser();
+        // if ($user !== $answer->getQuestion()->getUser()) {
+        //     throw $this->createAccessDeniedException('Non autorisé.');
+        // }
+        // On remplace le code précédent par l'usage de notre Voter
+        $this->denyAccessUnlessGranted('validateAnswer', $answer->getQuestion());
 
         // Valide réponse
         $answer->setIsValidated(true);
