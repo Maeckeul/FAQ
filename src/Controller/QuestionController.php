@@ -138,6 +138,33 @@ class QuestionController extends AbstractController
     }
 
     /**
+     * @Route("/question/{id}/edit", name="question_edit", requirements={"id": "\d+"})
+     */
+    public function edit(Question $question, Request $request)
+    {
+        // Avant toute chose, on teste si l'utilisateur a le droit de modifer la $question
+        // Cette méthode retourne une 403 (Access Denied) si l'utilisateur
+        // n'entre pas dans les conditions du Voter
+        $this->denyAccessUnlessGranted('edit', $question);
+
+        // Ensuite, on code l'édition de la question comme d'habitude
+        $form = $this->createForm(QuestionType::class, $question);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+
+            // On redirige vers la route question_view de notre $question
+            return $this->redirectToRoute('question_show', ['id' => $question->getId()]);
+        }
+
+        return $this->render('question/edit.html.twig', [
+            'form' => $form->createView(),
+        ]);
+
+    }
+
+    /**
      * @Route("/admin/question/toggle/{id}", name="admin_question_toggle")
      */
     public function adminToggle(Question $question = null)
