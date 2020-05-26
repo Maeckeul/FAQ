@@ -19,6 +19,10 @@
         <i><b>{{ question.answers|length }}</b> réponse(s)</i>
     </p>
 
+    {% if is_granted('edit', question) %}
+        <a href="{{ path('question_edit', {id: question.id}) }}" class="btn btn-warning btn-sm">Modifier la question</a>
+    {% endif %}
+
     {% if detail is defined %}
     <p>
         {{ question.body }}
