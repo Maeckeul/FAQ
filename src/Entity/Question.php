@@ -69,6 +69,11 @@ class Question
      */
     private $isSolved;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $image;
+
     public function __construct()
     {
         $this->answers = new ArrayCollection();
@@ -226,6 +231,18 @@ class Question
     public function setIsSolved(bool $isSolved): self
     {
         $this->isSolved = $isSolved;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
 
         return $this;
     }

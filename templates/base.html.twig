@@ -2,7 +2,8 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        {# <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"> #}
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
         <title>{% block title %}{% endblock %} - FAQ O'clock</title>
         <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     </head>
@@ -57,5 +58,14 @@
             </footer>
             
         </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const inputElt = document.getElementById("question_image");
+                inputElt.addEventListener('change', function (evt) {
+                    let filename = evt.currentTarget.value.split("\\").pop();
+                    document.querySelector('.custom-file label').textContent = filename;
+                });
+            });
+        </script>
     </body>
 </html>

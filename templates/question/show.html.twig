@@ -12,6 +12,11 @@
     <p><a href="{{ path('admin_question_toggle', {'id': question.id}) }}" class="btn btn-warning">{{ btnLabel }}</a></p>
 {% endif %}
 
+{% if question.image is not null %}
+<hr>
+<img src="{{ asset('images/questions/' ~ question.image) }}" alt="">
+{% endif %}
+
 <hr>
 
 <h3>{{ question.answers|length }} Réponse(s)</h3>

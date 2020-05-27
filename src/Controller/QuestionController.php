@@ -11,6 +11,7 @@ use App\Form\QuestionType;
 use App\Repository\AnswerRepository;
 use App\Repository\QuestionRepository;
 use App\Repository\UserRepository;
+use App\Service\ImageUploader;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -108,7 +109,7 @@ class QuestionController extends AbstractController
     /**
      * @Route("/question/add", name="question_add")
      */
-    public function add(Request $request, UserRepository $userRepository)
+    public function add(ImageUploader $imageUploader, Request $request, UserRepository $userRepository)
     {
         $question = new Question();
 
@@ -118,8 +119,16 @@ class QuestionController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $question = $form->getData();
+            // Cette ligne de code est un vestige de Symfony 3, elle est inutile depuis Symfony 4.0
+            // $question = $form->getData();
 
+            // On déplace l'image reçu, si elle existe, dans un sous-dossier de /public, «questions»
+            $filename = $imageUploader->moveFile($form->get('image')->getData(), 'questions');
+
+            // moveFile() retourne le nom du fichier créé ou la valeur null
+            // On attribue la valeur de $filename à la propriété image de $question
+            $question->setImage($filename);
+            
             // On associe le user connecté à la question
             $question->setUser($this->getUser());
 
@@ -140,7 +149,7 @@ class QuestionController extends AbstractController
     /**
      * @Route("/question/{id}/edit", name="question_edit", requirements={"id": "\d+"})
      */
-    public function edit(Question $question, Request $request)
+    public function edit(ImageUploader $imageUploader, Question $question, Request $request)
     {
         // Avant toute chose, on teste si l'utilisateur a le droit de modifer la $question
         // Cette méthode retourne une 403 (Access Denied) si l'utilisateur
@@ -152,6 +161,10 @@ class QuestionController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // On transfert la nouvelle image si elle a été reçue
+            $filename = $imageUploader->moveFile($form->get('image')->getData(), 'questions');
+            $question->setImage($filename);
+
             $this->getDoctrine()->getManager()->flush();
 
             // On redirige vers la route question_view de notre $question
