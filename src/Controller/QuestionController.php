@@ -81,6 +81,9 @@ class QuestionController extends AbstractController
             // On associe Réponse
             $answer->setQuestion($question);
 
+            // On attribue un nouveau DateTime à la propriété updatedAt de $question
+            $question->setUpdatedAt(new \DateTime());
+
             // On associe le user connecté à la réponse
             $answer->setUser($this->getUser());
 

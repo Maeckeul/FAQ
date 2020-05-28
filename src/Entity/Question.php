@@ -74,6 +74,16 @@ class Question
      */
     private $image;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default" : true})
+     */
+    private $active;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $updatedAt;
+
     public function __construct()
     {
         $this->answers = new ArrayCollection();
@@ -82,6 +92,7 @@ class Question
         $this->votes = 0;
         $this->isBlocked = false;
         $this->isSolved = false;
+        $this->active= true;
     }
 
     public function __toString()
@@ -243,6 +254,30 @@ class Question
     public function setImage(?string $image): self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getActive(): ?bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): self
+    {
+        $this->active = $active;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
