@@ -69,31 +69,40 @@ class QuestionController extends AbstractController
             throw $this->createAccessDeniedException('Non autorisé.');
         }
 
-        $answer = new Answer();
-
-        $form = $this->createForm(AnswerType::class, $answer);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            // $answer = $form->getData();
-            // On associe Réponse
-            $answer->setQuestion($question);
-
-            // On attribue un nouveau DateTime à la propriété updatedAt de $question
-            $question->setUpdatedAt(new \DateTime());
-
-            // On associe le user connecté à la réponse
-            $answer->setUser($this->getUser());
-
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($answer);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Réponse ajoutée');
-
-            return $this->redirectToRoute('question_show', ['id' => $question->getId()]);
+        // On ne va pas traiter le formulaire alors qu'on ne souhaite pas l'afficher
+        // On ne le fait donc que si la question est active
+        if ($question->isActive()) {
+            $answer = new Answer();
+            
+            $form = $this->createForm(AnswerType::class, $answer);
+            
+            $form->handleRequest($request);
+            
+            if ($form->isSubmitted() && $form->isValid()) {
+                
+                // $answer = $form->getData();
+                // On associe Réponse
+                $answer->setQuestion($question);
+                
+                // On attribue un nouveau DateTime à la propriété updatedAt de $question
+                $question->setUpdatedAt(new \DateTime());
+                
+                // On associe le user connecté à la réponse
+                $answer->setUser($this->getUser());
+                
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($answer);
+                $entityManager->flush();
+                
+                $this->addFlash('success', 'Réponse ajoutée');
+                
+                return $this->redirectToRoute('question_show', ['id' => $question->getId()]);
+            }
+            // On définir notre FormView pour l'envoyer au template
+            $formView = $form->createView();
+        } else {
+            // Si on n'a pas de formulaire, on définit au moins $formView
+            $formView = null;
         }
 
         // Réponses non bloquées
@@ -105,7 +114,7 @@ class QuestionController extends AbstractController
         return $this->render('question/show.html.twig', [
             'question' => $question,
             'answersNonBlocked' => $answersNonBlocked,
-            'form' => $form->createView(),
+            'form' => $formView,
         ]);
     }
 

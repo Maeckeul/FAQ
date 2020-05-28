@@ -29,24 +29,47 @@ class QuestionsDeactivateCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Désactive toutes les questions sans activité depuis plus de 7 jours')
-            // ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
-            // ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
+            ->setDescription('Désactive toutes les questions sans activité depuis plus de X jours (par défaut, 7 jours)')
+            ->addArgument('questionId', InputArgument::OPTIONAL, 'Si vous souhaitez désactiver une question précise, indiquez son id')
+            ->addOption('activate', 'a', InputOption::VALUE_NONE, 'Pour activer la question de questionId')
+            ->addOption('days', 'd', InputOption::VALUE_REQUIRED, 'Nombre de jours limite d\'inactivité', 7)
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        // $arg1 = $input->getArgument('arg1');
+        $questionId = $input->getArgument('questionId');
 
-        // if ($arg1) {
-        //     $io->note(sprintf('You passed an argument: %s', $arg1));
-        // }
+        // $question vaut null si l'argument n'est pas précisé dans la commande
+        // Sinon on reçoit bien la valeur
+        // null étant un équivalent de false, sans argument, ce if ne s'exécute pas
+        if ($questionId !== null) {
+            $question = $this->questionRepository->find($questionId);
 
-        // if ($input->getOption('option1')) {
-        //     // ...
-        // }
+            if ($question === null) {
+                $io->error('L\'id précisé ne correspond à aucune question en base de données');
+                return 1;
+            }
+            // Si on a trouvé la question, on la (dés)active
+            if ($input->getOption('activate')) {
+                $question->setActive(true);
+            } else {
+                $question->setActive(false);
+            }
+
+            $this->em->flush();
+
+            // On annonce que tout a fonctionné et on retourne 0 pour que le terminal comprenne que la commande a fonctionné
+            $io->success('La question '.$questionId.' est bien (dés)activée');
+            return 0;
+        }
+
+        // On récupère le nombre de jour limite à comparer pour désactiver les questions
+        // Si l'option n'a pas précisé dans la commande, on reçoit, par défaut, 7
+        $days = (int) $input->getOption('days');
+        // Attention, si l'option entrée est un mot et non un nombre, $days == 0
+        // On pourrait vérifier $days est supérieur à 0 et afficher un message d'erreur puir retourner l'entier 1
 
         // On recupère toutes les questions
         $questions = $this->questionRepository->findAll();
@@ -68,7 +91,7 @@ class QuestionsDeactivateCommand extends Command
 
             // $interval est un objet de la classe DateInterval
             // Sa propriété $days contient le nombre de jour entre deux dates (integer)
-            if ($interval->days > 7) {
+            if ($interval->days > $days) {
                 // Si la différence est supérieure à 7, on désactive la question
                 $question->setActive(false);
             }
@@ -77,7 +100,7 @@ class QuestionsDeactivateCommand extends Command
         // On flushe à la fin
         $this->em->flush();
 
-        $io->success('Toutes les questions de plus de 7 jours ont été désactivées');
+        $io->success('Toutes les questions sans activité depuis plus de '.$days.' jours ont été désactivées');
 
         return 0;
     }

@@ -47,11 +47,15 @@
 {% endfor %}
 
 <hr>
-<h4>Proposer une réponse</h4>
+{% if question.active %}
+    <h4>Proposer une réponse</h4>
 
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button type="submit" class="btn btn-primary">Soumettre</button>
-{{ form_end(form) }}
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" class="btn btn-primary">Soumettre</button>
+    {{ form_end(form) }}
+{% else %}
+    <div class="alert alert-warning">Cette question est désactivée, vous ne pouvez plus y répondre</div>    
+{% endif %}
 
 {% endblock %}
